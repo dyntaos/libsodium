@@ -84,8 +84,7 @@ _string_to_points(unsigned char * const px, size_t n,
     crypto_hash_sha512_state st;
     unsigned char            empty_block[128] = { 0 };
     unsigned char            u0[HASH_BYTES], u[2 * HASH_BYTES];
-    unsigned char            t[3] = { 0U, n * HASH_L, 0U};
-    unsigned char            ctx_len_u8;
+    unsigned char            t[4]    = { 0U, n * HASH_L, 0U, 0 };
     size_t                   ctx_len = ctx != NULL ? strlen(ctx) : 0U;
     size_t                   i, j;
 
@@ -103,13 +102,12 @@ _string_to_points(unsigned char * const px, size_t n,
         ctx_len = HASH_BYTES;
         COMPILER_ASSERT(HASH_BYTES <= (size_t) 0xff);
     }
-    ctx_len_u8 = (unsigned char) ctx_len;
     crypto_hash_sha512_init(&st);
     crypto_hash_sha512_update(&st, empty_block, sizeof empty_block);
     crypto_hash_sha512_update(&st, msg, msg_len);
-    crypto_hash_sha512_update(&st, t, 3U);
+    t[3] = (unsigned char) ctx_len;
+    crypto_hash_sha512_update(&st, t, 4U);
     crypto_hash_sha512_update(&st, (const unsigned char *) ctx, ctx_len);
-    crypto_hash_sha512_update(&st, &ctx_len_u8, 1U);
     crypto_hash_sha512_final(&st, u0);
 
     for (i = 0U; i < n * HASH_BYTES; i += HASH_BYTES) {
@@ -117,12 +115,11 @@ _string_to_points(unsigned char * const px, size_t n,
         for (j = 0U; i > 0U && j < HASH_BYTES; j++) {
             u[i + j] ^= u[i + j - HASH_BYTES];
         }
-        t[2]++;
         crypto_hash_sha512_init(&st);
         crypto_hash_sha512_update(&st, &u[i], HASH_BYTES);
-        crypto_hash_sha512_update(&st, &t[2], 1U);
+        t[2]++;
+        crypto_hash_sha512_update(&st, t + 2U, 2U);
         crypto_hash_sha512_update(&st, (const unsigned char *) ctx, ctx_len);
-        crypto_hash_sha512_update(&st, &ctx_len_u8, 1U);
         crypto_hash_sha512_final(&st, &u[i]);
     }
     for (i = 0U; i < n; i++) {
