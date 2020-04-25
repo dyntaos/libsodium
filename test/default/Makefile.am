@@ -43,7 +43,6 @@ EXTRA_DIST = \
 	hash2.exp \
 	hash3.exp \
 	kdf.exp \
-	kdf_hkdf.exp \
 	keygen.exp \
 	kx.exp \
 	metamorphic.exp \
@@ -126,7 +125,6 @@ DISTCLEANFILES = \
 	hash2.res \
 	hash3.res \
 	kdf.res \
-	kdf_hkdf.res \
 	keygen.res \
 	kx.res \
 	metamorphic.res \
@@ -376,9 +374,6 @@ hash3_LDADD               = $(TESTS_LDADD)
 kdf_SOURCE                = cmptest.h kdf.c
 kdf_LDADD                 = $(TESTS_LDADD)
 
-kdf_hkdf_SOURCE            = cmptest.h kdf_hkdf.c
-kdf_hkdf_LDADD             = $(TESTS_LDADD)
-
 keygen_SOURCE             = cmptest.h keygen.c
 keygen_LDADD              = $(TESTS_LDADD)
 
@@ -507,7 +502,6 @@ TESTS_TARGETS += \
 	core_ed25519 \
 	core_ed25519_h2c \
 	core_ristretto255 \
-	kdf_hkdf \
 	pwhash_scrypt \
 	pwhash_scrypt_ll \
 	scalarmult_ed25519 \
